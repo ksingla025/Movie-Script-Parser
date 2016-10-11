@@ -155,6 +155,6 @@ if __name__ == "__main__":
 	parser = ScriptParser()
 	## names in this list should satisfy URL : 
 	# TODO : replace this all movie crawler
-	raw_text = parser.fetch_data(["12-Monkeys","Walk-to-Remember,-A","Hellboy"])
+	raw_text = parser.fetch_data(["12-Monkeys","Walk-to-Remember,-A","Hellboy","Bad-Country"])
 	preprocessed_text = parser.pre_process(raw_text)
 	parser.text2xml(preprocessed_text)
