@@ -30,11 +30,9 @@ class ScriptParser(object):
 		return all_text
 
 	def text2xml(self,preprocessed_text):
-#		print str(soup.title).split(">")[1]
 		for movie in preprocessed_text.keys():
 
 			text = preprocessed_text[movie]
-
 			xml = []
 			dialogue = 0
 			FLAG = 0
@@ -47,28 +45,28 @@ class ScriptParser(object):
 		  	 	try :
 					if "**start**" in text[i]:
 						FLAG = 1
-						print "yes"
-					if "FADE OUT" in text[i]:
+					
+					if "**end**" in text[i]:
 						FLAG = 0
-						print "no"
-
+					
 					if FLAG == 1:
 						if text[i].startswith("**speaker**"):
-							#print text[i]
-#							print "hello"
 							text[i] = text[i].split("**speaker**")[1].strip()
-							print text[i]
 							speakers.append("\t<speaker>"+text[i]+"</speaker>")
-							utterance = ''
+
+							# uttrances for a dialogue
 							num_utterance = num_utterance + 1
+
+							# get a uttrance until there is a line break
+							utterance = ''
 							for j in range(1,10):
 								if len(text[i+j].split()) != 0:
-						
 									utterance = utterance + " " + text[i+j].strip()
 								else:
 									i = i + j
 									break
 
+							# get a context until there is a line break 
 							context = ''
 							for k in range(1,10):
 								if len(text[i+k].split()) != 0:
@@ -76,13 +74,11 @@ class ScriptParser(object):
 								else:
 									i = i + k
 									break
-
 							contexts.append('\t\t<context>'+context+'</context>')
 							utterances.append('\t\t<utterance>'+utterance+'</utterance>')
+
 						elif "**dialgoue_change**" in text[i] :
 
-							#print text[i]
-					
 							dialogue = dialogue + 1
 							if dialogue == 1:
 								xml.append('<dialogue id= "'+str(dialogue)+'" n_utterances= "'+str(num_utterance)+'">')
@@ -106,13 +102,7 @@ class ScriptParser(object):
 			xml_file = open(out_xml+movie+".xml",'w')		
 			for line in xml:
 				xml_file.write(line.encode('utf-8')+"\n")
-			'''				
-			if FLAG == 0:
-				for sp in range(0,len(speakers)):
-					print speakers[sp]
-					print contexts[sp]
-					print utterances[sp]
-			'''
+
 			xml_file.close()
 
 	def pre_process(self,raw_text):
@@ -129,7 +119,6 @@ class ScriptParser(object):
 					# speaker boundries
 					if len(text[i]) - len(text[i].lstrip()) == 4:
 						text[i] = text[i].replace("\t\t\t\t","**speaker**")
-
 					if text[i].startswith("                         "):
 						text[i] = text[i].replace("                         ","**speaker**")
 					
@@ -139,7 +128,6 @@ class ScriptParser(object):
 					if "EXT." in text[i]:
 						text[i] = text[i].replace("INT.","**dialgoue_change**")
 
-
 					# start points
 					if "FADE IN:" in text[i]:
 						text[i] = text[i].replace("FADE IN:","**start**")
@@ -147,13 +135,13 @@ class ScriptParser(object):
 						text[i] = text[i].replace("OMIT","**start**")
 
 					# end points
-
-
+					if "FADE OUT" in text[i]:
+						text[i] = text[i].replace("FADE OUT","**end**")
 
 					preprocess_text.append(text[i])
 				except:
 					continue
-#			print preprocess_text
+
 			preprocess_all_text[movie] = preprocess_text
 		
 		return preprocess_all_text
@@ -165,5 +153,3 @@ if __name__ == "__main__":
 	raw_text = parser.fetch_data(["12-Monkeys","Walk-to-Remember,-A","Hellboy"])
 	preprocessed_text = parser.pre_process(raw_text)
 	parser.text2xml(preprocessed_text)
-
-#	print preprocessed_text
