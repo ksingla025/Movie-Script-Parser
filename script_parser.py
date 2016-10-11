@@ -13,7 +13,7 @@ commands.getstatusoutput("mkdir -p "+out_xml)
 class ScriptParser(object):
 
 	def _init(self):
-		self.karan = ''
+		self.text = ''
 	def fetch_data(self,movie_list):
 		all_text  = {}
 		for movie in movie_list:
