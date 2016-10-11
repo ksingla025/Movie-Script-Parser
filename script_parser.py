@@ -7,7 +7,7 @@ import requests
 import commands
 from bs4 import BeautifulSoup
 
-out_xml = "/Users/Singla/Desktop/projects/MICA/ScriptParser/out_xml/"
+out_xml = "/Users/Singla/Desktop/projects/MICA/Movie-Script-Parser/out_xml/"
 commands.getstatusoutput("mkdir -p "+out_xml)
 
 class ScriptParser(object):
@@ -61,7 +61,10 @@ class ScriptParser(object):
 							utterance = ''
 							for j in range(1,10):
 								if len(text[i+j].split()) != 0:
-									utterance = utterance + " " + text[i+j].strip()
+									if "**dialgoue_change**" not in text[i+j]:
+										utterance = utterance + " " + text[i+j].strip()
+									else:
+										break
 								else:
 									i = i + j
 									break
@@ -70,7 +73,10 @@ class ScriptParser(object):
 							context = ''
 							for k in range(1,10):
 								if len(text[i+k].split()) != 0:
-									context = context + " " + text[i+k].strip()
+									if "**dialgoue_change**" not in text[i+k]:
+										context = context + " " + text[i+k].strip()
+									else:
+										break	
 								else:
 									i = i + k
 									break
@@ -78,7 +84,6 @@ class ScriptParser(object):
 							utterances.append('\t\t<utterance>'+utterance+'</utterance>')
 
 						elif "**dialgoue_change**" in text[i] :
-
 							dialogue = dialogue + 1
 							if dialogue == 1:
 								xml.append('<dialogue id= "'+str(dialogue)+'" n_utterances= "'+str(num_utterance)+'">')
